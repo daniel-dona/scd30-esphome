@@ -32,6 +32,13 @@ void SCD30Component::setup() {
   Wire.setClockStretchLimit(150000);
 #endif
 
+  if (!this->write_command(SCD30_CMD_STOP_MEASUREMENTS, 0)) {
+    ESP_LOGE(TAG, "Sensor SCD30 error stopping continuous measurements.");
+    this->error_code_ = MEASUREMENT_INIT_FAILED;
+    this->mark_failed();
+    return;
+  }
+
   /// Firmware version identification
   uint16_t raw_firmware_version[3];
   if (!this->get_register(SCD30_CMD_GET_FIRMWARE_VERSION, raw_firmware_version, 3)) {
